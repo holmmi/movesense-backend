@@ -1,4 +1,3 @@
-const helloWorld = (): void => {
-    console.log('Hello World!')
-}
-helloWorld()
+import app from './app'
+
+app.listen(8080)
