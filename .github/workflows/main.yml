@@ -1,5 +1,5 @@
 name: Backend main workflow
-on: 
+on:
   push:
     branches:
       - '*'
@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v2
-          with:
-            node-version: '12'
+        with:
+          node-version: '12'
       - name: Install dependencies
         run: npm install
       - name: Compile TypeScript
