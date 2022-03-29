@@ -1,0 +1,21 @@
+{
+  "dev": {
+    "driver": "pg",
+    "user": "dev",
+    "password": "dev",
+    "host": "localhost",
+    "database": "dev",
+    "port": "5432",
+    "schema": "public"
+  },
+  "prod": {
+    "driver": "pg",
+    "user": { "ENV": "DATABASE_USER" },
+    "password": { "ENV": "DATABASE_PASSWORD" },
+    "host": { "ENV": "DATABASE_HOST" },
+    "database": { "ENV": "DATABASE_NAME" },
+    "port": { "ENV": "DATABASE_PORT" },
+    "schema": "public"
+  },
+  "sql-file": true
+}
