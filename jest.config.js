@@ -5,4 +5,6 @@ module.exports = {
     '^.+\\.ts?$': 'ts-jest',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  modulePathIgnorePatterns: ['utils'],
+  coveragePathIgnorePatterns: ['<rootDir>/migrations/'],
 }
