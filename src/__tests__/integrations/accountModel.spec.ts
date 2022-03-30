@@ -21,15 +21,15 @@ describe('Account model tests', () => {
       name: 'Test organization',
     })
 
-    const accoutModel = new AccountModel(testPool)
-    await accoutModel.addAccount({
+    const accountModel = new AccountModel(testPool)
+    await accountModel.addAccount({
       name: 'John Doe',
       username: 'john.doe',
       password: 'JohnDoe!?123',
       organization_id: 1,
     })
 
-    const account = await accoutModel.getAccount({ username: 'john.doe' })
+    const account = await accountModel.getAccount({ username: 'john.doe' })
 
     expect(account).not.toBeNull()
     expect(account?.id).toBe(1)
