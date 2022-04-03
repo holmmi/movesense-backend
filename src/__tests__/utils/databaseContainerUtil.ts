@@ -8,12 +8,23 @@ const getDatabaseContainer = async (): Promise<StartedTestContainer> => {
     .withEnv('POSTGRES_PASSWORD', 'test')
     .start()
 
+  await initializeDatabase(container.getHost(), container.getMappedPort(5432))
+
+  setDatabaseEnvironmentVariables(
+    container.getHost(),
+    container.getMappedPort(5432)
+  )
+
+  return container
+}
+
+const initializeDatabase = async (host: string, port: number) => {
   const migrate = DBMigrate.getInstance(true, {
     config: {
       test: {
         driver: 'pg',
-        host: container.getHost(),
-        port: container.getMappedPort(5432),
+        host: host,
+        port: port,
         user: 'test',
         password: 'test',
         database: 'test',
@@ -22,9 +33,17 @@ const getDatabaseContainer = async (): Promise<StartedTestContainer> => {
     },
     env: 'test',
   })
+  migrate.silence(true)
   await migrate.reset()
   await migrate.up()
-  return container
+}
+
+const setDatabaseEnvironmentVariables = (host: string, port: number) => {
+  process.env['DATABASE_HOST'] = host
+  process.env['DATABASE_PORT'] = port.toString()
+  process.env['DATABASE_USER'] = 'test'
+  process.env['DATABASE_PASSWORD'] = 'test'
+  process.env['DATABASE_NAME'] = 'test'
 }
 
 export { getDatabaseContainer }
