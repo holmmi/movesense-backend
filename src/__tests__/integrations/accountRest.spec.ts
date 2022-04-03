@@ -11,7 +11,7 @@ describe('Account creation tests', () => {
 
     const { addOrganization } = await import('../../models/organizationModel')
     await addOrganization({ name: 'Test A' })
-  })
+  }, 30 * 1000)
 
   it('Account is created', async () => {
     const app = (await import('../../app')).default
