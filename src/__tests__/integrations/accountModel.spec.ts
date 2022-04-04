@@ -1,35 +1,30 @@
 import 'jest'
-import { Pool } from 'pg'
 import { StartedTestContainer } from 'testcontainers'
-import { getTestPool } from '../../database/pool'
-import { AccountModel } from '../../models/accountModel'
-import { OrganizationModel } from '../../models/organizationModel'
 import { getDatabaseContainer } from '../utils/databaseContainerUtil'
 
 describe('Account model tests', () => {
   let container: StartedTestContainer
-  let testPool: Pool
 
   beforeAll(async () => {
     container = await getDatabaseContainer()
-    testPool = getTestPool(container.getHost(), container.getMappedPort(5432))
   }, 30 * 1000)
 
   it('Account is added', async () => {
-    const organizationModel = new OrganizationModel(testPool)
-    await organizationModel.addOrganization({
+    const { getAccount, addAccount } = await import('../../models/accountModel')
+    const { addOrganization } = await import('../../models/organizationModel')
+
+    await addOrganization({
       name: 'Test organization',
     })
 
-    const accountModel = new AccountModel(testPool)
-    await accountModel.addAccount({
+    await addAccount({
       name: 'John Doe',
       username: 'john.doe',
       password: 'JohnDoe!?123',
       organization_id: 1,
     })
 
-    const account = await accountModel.getAccount({ username: 'john.doe' })
+    const account = await getAccount('john.doe')
 
     expect(account).not.toBeNull()
     expect(account?.id).toBe(1)
@@ -39,19 +34,19 @@ describe('Account model tests', () => {
   })
 
   it('Account is found by identifier', async () => {
-    const accountModel = new AccountModel(testPool)
-    const account = await accountModel.getAccountById(1)
+    const { getAccountById } = await import('../../models/accountModel')
+
+    const account = await getAccountById(1)
 
     expect(account).not.toBeNull()
     expect(account?.id).toBe(1)
     expect(account?.name).toBe('John Doe')
     expect(account?.username).toBe('john.doe')
     expect(account?.organization_id).toBe(1)
-    expect(account.organization_name).toBe('Test organization')
+    expect(account?.organization_name).toBe('Test organization')
   })
 
   afterAll(async () => {
-    await testPool.end()
     await container.stop()
   })
 })
