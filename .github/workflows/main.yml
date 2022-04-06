@@ -20,6 +20,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Compile TypeScript
-        run: npx tsc
+        run: npm run compile
       - name: Run tests
         run: npm test

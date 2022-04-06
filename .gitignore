@@ -131,3 +131,6 @@ dist
 
 # System
 .DS_Store
+
+# Secrets
+secrets/
