@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
-import { AccountDetails, addAccount } from '../models/accountModel'
+import {
+  AccountDetails,
+  addAccount,
+  getAccountById,
+} from '../models/accountModel'
 import admin from 'firebase-admin'
 
 interface RegistrationDetails {
@@ -40,4 +44,17 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-export { login, register }
+const accountDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const details = await getAccountById(req.accountId)
+    res.json(details)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export { accountDetails, login, register }
