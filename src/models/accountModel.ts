@@ -37,4 +37,4 @@ const getAccountById = async (id: number): Promise<FullAccountDetails> => {
   return rows[0] as FullAccountDetails
 }
 
-export { addAccount, getAccount, getAccountById }
+export { addAccount, getAccount, getAccountById, AccountDetails }

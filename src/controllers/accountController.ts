@@ -1,5 +1,6 @@
-import { Request, Response } from 'express'
-import { addAccount } from '../models/accountModel'
+import { NextFunction, Request, Response } from 'express'
+import { AccountDetails, addAccount } from '../models/accountModel'
+import admin from 'firebase-admin'
 
 interface RegistrationDetails {
   name: string
@@ -9,7 +10,22 @@ interface RegistrationDetails {
   organizationId: number
 }
 
-const register = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  const account = req.user as AccountDetails
+  try {
+    const token = await admin
+      .auth()
+      .createCustomToken(account.id?.toString() ?? 'Unknown', {
+        organizationId: account.organization_id,
+        accountId: account.id,
+      })
+    res.json({ token: token })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const register = async (req: Request, res: Response, next: NextFunction) => {
   const registrationDetails = req.body as RegistrationDetails
   try {
     await addAccount({
@@ -20,9 +36,8 @@ const register = async (req: Request, res: Response) => {
     })
     res.json({ msg: 'Account has been created.' })
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ msg: 'Internal server error' })
+    next(error)
   }
 }
 
-export { register }
+export { login, register }

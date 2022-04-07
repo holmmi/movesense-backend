@@ -3,6 +3,13 @@ import { StartedTestContainer } from 'testcontainers'
 import { getDatabaseContainer } from '../utils/databaseContainerUtil'
 import request from 'supertest'
 
+jest.mock('firebase-admin', () => {
+  return {
+    auth: jest.fn().mockReturnThis(),
+    createCustomToken: jest.fn().mockReturnValue('ABCD'),
+  }
+})
+
 describe('Account creation tests', () => {
   let container: StartedTestContainer
 
@@ -41,6 +48,28 @@ describe('Account creation tests', () => {
     expect(response.headers['content-type']).toMatch(/json/)
     expect(response.statusCode).toBe(400)
     expect(response.body).toBeDefined()
+  })
+
+  it('Login succeeds', async () => {
+    const app = (await import('../../app')).default
+    const response = await request(app)
+      .post('/account/login')
+      .accept('application/json')
+      .send({ username: 'john.doe', password: 'JohnDoe12345!' })
+
+    expect(response.header['content-type']).toMatch(/json/)
+    expect(response.statusCode).toBe(200)
+    expect(response.body.token).toBe('ABCD')
+  })
+
+  it('Login does not succeed', async () => {
+    const app = (await import('../../app')).default
+    const response = await request(app)
+      .post('/account/login')
+      .accept('application/json')
+      .send({ username: 'john.doe', password: 'JohnDoe12345' })
+
+    expect(response.statusCode).toBe(401)
   })
 
   afterAll(async () => {
