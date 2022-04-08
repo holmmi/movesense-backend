@@ -11,7 +11,7 @@ passport.use(
     if (!account) {
       return done(null, false)
     }
-    if (!(await bcrypt.compare(password, account.password))) {
+    if (!(await bcrypt.compare(password, account.password ?? ''))) {
       return done(null, false)
     }
     return done(null, account)
