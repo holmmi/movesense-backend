@@ -1,5 +1,10 @@
 import express from 'express'
-import { login, register } from '../controllers/accountController'
+import {
+  accountDetails,
+  login,
+  register,
+} from '../controllers/accountController'
+import idTokenVerifier from '../controllers/idTokenVerifier'
 import passport from '../passport/passportLocal'
 import loginValidator from '../validators/loginValidator'
 import registrationValidator from '../validators/registrationValidator'
@@ -12,5 +17,6 @@ router.post(
   passport.authenticate('local', { session: false }),
   login
 )
+router.get('/details', idTokenVerifier, accountDetails)
 
 export default router

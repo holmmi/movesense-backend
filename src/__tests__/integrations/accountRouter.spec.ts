@@ -2,15 +2,17 @@ import 'jest'
 import { StartedTestContainer } from 'testcontainers'
 import { getDatabaseContainer } from '../utils/databaseContainerUtil'
 import request from 'supertest'
+import { FullAccountDetails } from '../../models/accountModel'
 
 jest.mock('firebase-admin', () => {
   return {
     auth: jest.fn().mockReturnThis(),
     createCustomToken: jest.fn().mockReturnValue('ABCD'),
+    verifyIdToken: jest.fn().mockReturnValue({ uid: '1' }),
   }
 })
 
-describe('Account creation tests', () => {
+describe('Account router tests', () => {
   let container: StartedTestContainer
 
   beforeAll(async () => {
@@ -70,6 +72,26 @@ describe('Account creation tests', () => {
       .send({ username: 'john.doe', password: 'JohnDoe12345' })
 
     expect(response.statusCode).toBe(401)
+  })
+
+  it('User details are obtained', async () => {
+    const app = (await import('../../app')).default
+    const response = await request(app)
+      .get('/account/details')
+      .set('Authorization', 'Bearer ' + '123456789')
+      .accept('application/json')
+
+    expect(response.header['content-type']).toMatch(/json/)
+    expect(response.statusCode).toBe(200)
+
+    const details = response.body as FullAccountDetails
+    expect(details).toBeDefined()
+    expect(details.id).toBe(1)
+    expect(details.name).toBe('John Doe')
+    expect(details.organization_name).toBe('Test A')
+    expect(details.username).toBe('john.doe')
+    expect(details.password).toBeUndefined()
+    expect(details.organization_id).toBe(1)
   })
 
   afterAll(async () => {

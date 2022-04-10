@@ -4,7 +4,7 @@ import pool from '../database/pool'
 interface AccountDetails {
   id?: number
   username: string
-  password: string
+  password?: string
   name: string
   organization_id?: number
 }
@@ -14,7 +14,7 @@ interface FullAccountDetails extends AccountDetails {
 }
 
 const addAccount = async (account: AccountDetails) => {
-  const password = await bcrypt.hash(account.password, 10)
+  const password = await bcrypt.hash(account.password ?? '', 10)
   await pool.query(
     'INSERT INTO account (username, password, name, organization_id) VALUES ($1, $2, $3, $4)',
     [account.username, password, account.name, account.organization_id]
@@ -34,7 +34,15 @@ const getAccountById = async (id: number): Promise<FullAccountDetails> => {
     'SELECT a.*, o.name as organization_name FROM account a LEFT JOIN organization o ON o.id = a.organization_id WHERE a.id = $1',
     [id]
   )
-  return rows[0] as FullAccountDetails
+  const details = rows[0] as FullAccountDetails
+  delete details.password
+  return details
 }
 
-export { addAccount, getAccount, getAccountById, AccountDetails }
+export {
+  addAccount,
+  getAccount,
+  getAccountById,
+  AccountDetails,
+  FullAccountDetails,
+}
