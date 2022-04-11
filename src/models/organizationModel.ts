@@ -16,4 +16,4 @@ const getOrganizations = async (): Promise<OrganizationDetails[]> => {
   return rows as OrganizationDetails[]
 }
 
-export { addOrganization, getOrganizations }
+export { addOrganization, getOrganizations, OrganizationDetails }
