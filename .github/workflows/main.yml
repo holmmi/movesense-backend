@@ -25,7 +25,7 @@ jobs:
       - name: Run tests
         run: npm test
       - name: Deploy to Azure
-        if: github.ref == 'refs/heads/18-azure-deployment'
+        if: github.ref == 'refs/heads/main'
         run: |
           mkdir secrets
           echo '${{ secrets.FIREBASE_CONFIG }}' > secrets/firebase.json
