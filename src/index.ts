@@ -6,4 +6,4 @@ admin.initializeApp({
 })
 import app from './app'
 
-app.listen(8080)
+app.listen(process.env['SERVER_PORT'] || 8080)

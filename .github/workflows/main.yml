@@ -8,8 +8,9 @@ on:
       - '*'
   workflow_dispatch:
 jobs:
-  run-tests:
+  run-tests-and-deploy:
     runs-on: ubuntu-latest
+    environment: test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -23,3 +24,14 @@ jobs:
         run: npx tsc
       - name: Run tests
         run: npm test
+      - name: Deploy to Azure
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir secrets
+          echo '${{ secrets.FIREBASE_CONFIG }}' > secrets/firebase.json
+          echo "${{ secrets.ENVIRONMENT_VARIABLES }}" > .env
+          docker build -t movesense-backend .
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u movesensemetropolia --password-stdin movesensemetropolia.azurecr.io
+          docker tag movesense-backend movesensemetropolia.azurecr.io/movesense-backend
+          docker push movesensemetropolia.azurecr.io/movesense-backend
+          docker logout
