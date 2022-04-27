@@ -1,8 +1,11 @@
-import express from 'express'
-import { getOrganizationDetails } from '../controllers/organizationController'
+import express from "express";
+import { getOrganizationDetails, addNewOrganization } from "../controllers/organizationController";
+import organizationValidator from "../validators/organizationValidator";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/details', getOrganizationDetails)
+router.get("/details", getOrganizationDetails);
 
-export default router
+router.post("/add", organizationValidator, addNewOrganization);
+
+export default router;

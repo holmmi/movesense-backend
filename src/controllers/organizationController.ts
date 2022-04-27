@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express'
-import { getOrganizations } from '../models/organizationModel'
+import { NextFunction, Request, Response } from "express";
+import { getOrganizations, addOrganization } from "../models/organizationModel";
 
 const getOrganizationDetails = async (
   req: Request,
@@ -7,10 +7,23 @@ const getOrganizationDetails = async (
   next: NextFunction
 ) => {
   try {
-    res.json(await getOrganizations())
+    res.json(await getOrganizations());
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-export { getOrganizationDetails }
+const addNewOrganization = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await addOrganization({ name: req.body.name });
+    res.json({ msg: "Organization added" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getOrganizationDetails, addNewOrganization };
